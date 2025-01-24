@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Code Assistant</title>
+    <!-- Update the CSS path -->
+    <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/static/css/style.css">
+<!--    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">-->
+</head>
+<body>
+<div class="app-container">
+    <header>
+        <div class="header-content">
+            <h1>AI Code Assistant</h1>
+            <div class="status-indicator">
+                <div class="pulse"></div>
+                <span id="status-text">Ready</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="chat-wrapper">
+            <div id="chat-messages" class="chat-container">
+                <!-- Messages will be inserted here -->
+            </div>
+        </div>
+
+        <div class="bottom-wrapper">
+            <div class="suggestions">
+                <button onclick="suggestQuery('🌐\nHTTP Handler')">
+                    <span>🌐 HTTP Handler</span>
+                </button>
+                <button onclick="suggestQuery('📚\nDesign Patterns')">
+                    <span>📚 Design Patterns</span>
+                </button>
+                <button onclick="suggestQuery('⚡\nOptimize Code')">
+                    <span>⚡ Optimize Code</span>
+                </button>
+            </div>
+
+            <div class="input-container">
+                <div class="input-wrapper">
+                        <textarea
+                                id="user-input"
+                                placeholder="Type your message..."
+                                rows="1"
+                        ></textarea>
+                    <button id="send-button" onclick="sendMessage()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Update the JavaScript path -->
+<script src="/static/js/chat.js"></script>
+</body>
+</html>
