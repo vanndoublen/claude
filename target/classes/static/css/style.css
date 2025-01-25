@@ -9,22 +9,54 @@
     --message-bot: #201C2B;
     --code-bg: #16141F;
     --border-color: #2D2B3B;
+    font-family: 'Noto Serif', serif;
+
+}
+/* Light theme (default) */
+:root {
+    --bg-primary: #FAF7F0;
+    --bg-secondary: #F4F1E8;
+    --text-primary: #4A4947;
+    --text-secondary: #6F6E6C;
+    --accent-primary: #847F7A;
+    --accent-secondary: #696561;
+    --message-user: #E9E4D8;
+    --message-bot: #F0EDE4;
+    --code-bg: #000000;
+    --border-color: #D8D3CA;
+}
+
+/* Dark theme */
+[data-theme="dark"] {
+    --bg-primary: #1A1816;
+    --bg-secondary: #232020;
+    --text-primary: #E6E2DC;
+    --text-secondary: #B8B4AF;
+    --accent-primary: #A39E98;
+    --accent-secondary: #8A847E;
+    --message-user: #2C2826;
+    --message-bot: #252221;
+    --code-bg: #111111;
+    --border-color: #363230;
 }
 
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: 'Noto Serif', serif;
 }
 
+/* Remove the font-family from body and keep other properties */
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     background-color: var(--bg-primary);
     color: var(--text-primary);
     line-height: 1.6;
     height: 100vh;
 }
-
 .app-container {
     display: flex;
     flex-direction: column;
@@ -72,18 +104,17 @@ h1 {
 }
 
 .chat-container {
-    width: 70%;
+    width: 50%;
     max-width: 1000px;
     overflow-y: auto;
     padding: 1rem;
     scroll-behavior: smooth;
 }
 
-/* Message Styles */
 .message {
     max-width: 100%;
-    margin: 1.5rem 0;
-    padding: 1rem;
+    margin: 1rem 0; /* Increased from 1.5rem */
+    padding: 1rem; /* Increased from 1rem */
     border-radius: 1rem;
     animation: slideIn 0.3s ease-out;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -105,6 +136,8 @@ h1 {
 .code-block-wrapper {
     position: relative;
     margin: 0.5rem 0;
+    background-color: var(--code-bg);
+    border-radius: 0.5rem;
 }
 
 .copy-button {
@@ -139,24 +172,20 @@ h1 {
     margin: 0;
     padding: 1rem;
     padding-top: 2.5rem;
-    background-color: var(--code-bg);
     border-radius: 0.5rem;
     overflow-x: auto;
+    background: transparent; /* Remove pre background since wrapper has it */
 }
 
-.code-block-wrapper code {
-    font-family: 'Fira Code', monospace;
-    font-size: 0.9rem;
-    color: var(--text-primary);
-}
 
-/* Bottom Area Styles */
+
+/* Bottom Area Styles
 .bottom-wrapper {
     background-color: var(--bg-secondary);
     border-top: 1px solid var(--border-color);
     padding: 1rem 0;
 }
-
+*/
 .suggestions {
     display: flex;
     gap: 0.75rem;
@@ -186,9 +215,9 @@ h1 {
 }
 
 .input-container {
-    width: 70%;
+    width: 50%;
     max-width: 1000px;
-    margin: 0 auto;
+    margin: 10px auto;
     padding: 0 1rem;
 }
 
@@ -224,7 +253,7 @@ textarea:focus {
     background-color: var(--accent-primary);
     color: white;
     border: none;
-    border-radius: 0.75rem;
+    border-radius: 3rem; /* was 0.75 */
     cursor: pointer;
     transition: all 0.3s ease;
     padding: 0.75rem;
@@ -235,7 +264,7 @@ textarea:focus {
 
 #send-button:hover {
     background-color: var(--accent-secondary);
-    transform: translateY(-1px);
+    transform: translateY(2px);
 }
 
 #send-button svg {
@@ -243,7 +272,7 @@ textarea:focus {
 }
 
 #send-button:hover svg {
-    transform: translateX(2px) translateY(-2px);
+    transform: translateY(-2px);
 }
 
 /* Status Indicator */
@@ -376,23 +405,170 @@ textarea::-webkit-scrollbar-thumb:hover {
 }
 
 .message-content {
-    line-height: 1.5;
-    margin: 0.5rem 0;
+    line-height: 1.5; /* Increased from 1.5 */
+    margin: 0.6rem 0; /* Increased from 0.5rem */
+    font-weight: 500; /* Slightly bolder than normal (400) but not as bold as 500 */
 }
 
 .message-content div {
-    margin-bottom: 1rem;
+    margin-bottom: 1.1rem; /* Increased from 1rem */
 }
 
 /* Style for bullet points */
 .message-content • {
-    margin-left: 1rem;
+    margin-left: 1rem; /* Increased from 1rem */
+    margin-bottom: 1.2rem; /* Added for better spacing between bullet points */
     display: block;
 }
 
 /* Add some spacing between paragraphs */
 .message-content p {
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem; /* Increased from 1rem */
+}
+
+.message-content,
+textarea,
+button,
+h1,
+.status-indicator {
+    font-family: 'Noto Serif', serif;
 }
 
 
+.code-block-wrapper code {
+    font-family: 'Fira Code', monospace !important;
+    font-size: 14px !important;
+    line-height: 1.6 !important;
+    background: transparent;
+}
+
+/* Syntax Highlighting Colors - Add these */
+.hljs {
+    background: transparent !important;
+    color: #e9e9ec;
+}
+
+.hljs-keyword,
+.hljs-selector-tag {
+    color: #9D5CFF;
+}
+
+.hljs-string,
+.hljs-doctag {
+    color: #9ece6a;
+}
+
+.hljs-number,
+.hljs-literal {
+    color: #ff9e64;
+}
+
+.hljs-title,
+.hljs-class,
+.hljs-function {
+    color: #7aa2f7;
+}
+
+.hljs-comment {
+    color: #565f89;
+}
+
+.hljs-attr,
+.hljs-variable,
+.hljs-template-variable {
+    color: #bb9af7;
+}
+
+.hljs-builtin,
+.hljs-type {
+    color: #0db9d7;
+}
+
+/* Code specific font settings */
+.code-block-wrapper pre,
+.code-block-wrapper code,
+.hljs {
+    font-family: 'JetBrains Mono', monospace !important;
+    font-variant-ligatures: normal;
+    font-feature-settings: "calt" 1;
+    text-rendering: optimizeLegibility;
+    font-size: 14px !important;
+    line-height: 1.6 !important;
+    letter-spacing: 0;
+    tab-size: 4;
+}
+
+.hljs * {
+    font-family: 'JetBrains Mono', monospace !important;
+}
+
+/* Override any potential font mixing */
+.hljs-keyword,
+.hljs-string,
+.hljs-number,
+.hljs-builtin,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-comment,
+.hljs-class,
+.hljs-function {
+    font-family: 'JetBrains Mono', monospace !important;
+    font-feature-settings: "calt" 1;
+}
+
+
+
+.theme-toggle {
+    background: none;
+    border: none;
+    padding: 0.5rem;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s;
+    color: var(--text-primary);
+    position: relative;
+}
+
+.theme-toggle:hover {
+    background-color: var(--bg-secondary);
+}
+
+.sun-and-moon {
+    position: relative;
+    width: 24px;
+    height: 24px;
+}
+
+.sun-icon,
+.moon-icon {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: transform 0.3s, opacity 0.3s;
+}
+
+:root[data-theme="dark"] .sun-icon {
+    transform: scale(0);
+    opacity: 0;
+}
+
+:root[data-theme="dark"] .moon-icon {
+    transform: scale(1);
+    opacity: 1;
+}
+
+.sun-icon {
+    transform: scale(1);
+    opacity: 1;
+}
+
+.moon-icon {
+    transform: scale(0);
+    opacity: 0;
+}

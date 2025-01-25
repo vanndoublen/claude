@@ -44,12 +44,11 @@ public class ChatController {
         }
 
         // Modified system prompt to encourage complete responses
-        String systemPrompt = "You are a programming assistant. Provide complete, detailed responses. " +
-                "Never truncate or abbreviate your answers. If the response is long, provide it in full. " +
+        String systemPrompt = "You are a programming assistant." +
                 "Follow these rules for formatting:\n" +
-                "1. Math formulas: Use double backslashes (\\\\) in KaTeX notation\n" +
-                "2. Code: Use ```language blocks\n" +
-                "3. Lists: Put blank lines between items\n\n" +
+                "1. Code: Use ```language blocks\n" +
+                "2. Lists: Put blank lines between items\n\n" +
+
                 "Previous conversation:\n" + contextBuilder.toString();
 
         ChatResponse response = chatClient.prompt()

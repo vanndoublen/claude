@@ -41,7 +41,7 @@ public class AnthropicConfig {
     public AnthropicChatModel anthropicChatModel(AnthropicApi anthropicApi) {
         AnthropicChatOptions options = AnthropicChatOptions.builder()
                 .model("claude-3-5-sonnet-20241022")
-                .maxTokens(4000)
+                .maxTokens(1000)
                 .temperature(0.7)
                 .build();
 

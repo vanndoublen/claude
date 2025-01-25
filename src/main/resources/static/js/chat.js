@@ -63,28 +63,32 @@ function createMessageElement(role, content) {
         const parts = content.split('```');
         parts.forEach((part, index) => {
             if (index % 2 === 0) {
-                // Regular text - improve formatting
                 if (part.trim()) {
                     const textDiv = document.createElement('div');
-                    // Convert hyphens/dashes at start of lines to bullet points
+
                     const formattedText = part
                         .split('\n')
                         .map(line => {
-                            line = line.trim();
-                            if (line.startsWith('- ')) {
-                                return `• ${line.substring(2)}`; // Replace dash with bullet
+                            const trimmedLine = line.trim();
+                            const leadingSpaces = line.match(/^\s*/)[0].length;
+                            const indentLevel = Math.floor(leadingSpaces / 2);
+
+                            if (trimmedLine.match(/^\d+\./)) {
+                                return '    '.repeat(indentLevel) + trimmedLine;
+                            } else if (trimmedLine.startsWith('- ') || trimmedLine.startsWith('* ')) {
+                                return '    '.repeat(indentLevel) + trimmedLine;
                             }
-                            return line;
+
+                            return '    '.repeat(indentLevel) + trimmedLine;
                         })
                         .join('\n');
 
-                    // Preserve line breaks and spacing
                     textDiv.style.whiteSpace = 'pre-wrap';
                     textDiv.textContent = formattedText;
                     contentDiv.appendChild(textDiv);
                 }
             } else {
-                // Code block (unchanged)
+                // Code block handling
                 const codeWrapper = document.createElement('div');
                 codeWrapper.className = 'code-block-wrapper';
 
@@ -103,24 +107,43 @@ function createMessageElement(role, content) {
 
                 const pre = document.createElement('pre');
                 const code = document.createElement('code');
-                code.textContent = codeText;
+
+                // Extract language if specified
+                let language = 'plaintext';
+                const firstLine = codeText.split('\n')[0].trim();
+                if (firstLine.startsWith('language-') || firstLine.match(/^[a-zA-Z]+$/)) {
+                    language = firstLine.replace('language-', '');
+                    code.textContent = codeText.split('\n').slice(1).join('\n');
+                } else {
+                    code.textContent = codeText;
+                }
+
+                code.className = `language-${language}`;
                 pre.appendChild(code);
 
                 codeWrapper.appendChild(copyButton);
                 codeWrapper.appendChild(pre);
                 contentDiv.appendChild(codeWrapper);
+
+                // Apply highlighting
+                hljs.highlightElement(code);
             }
         });
     } else {
-        // For messages without code blocks
         const formattedText = content
             .split('\n')
             .map(line => {
-                line = line.trim();
-                if (line.startsWith('- ')) {
-                    return `• ${line.substring(2)}`;
+                const trimmedLine = line.trim();
+                const leadingSpaces = line.match(/^\s*/)[0].length;
+                const indentLevel = Math.floor(leadingSpaces / 2);
+
+                if (trimmedLine.match(/^\d+\./)) {
+                    return '    '.repeat(indentLevel) + trimmedLine;
+                } else if (trimmedLine.startsWith('- ') || trimmedLine.startsWith('* ')) {
+                    return '    '.repeat(indentLevel) + trimmedLine;
                 }
-                return line;
+
+                return '    '.repeat(indentLevel) + trimmedLine;
             })
             .join('\n');
 
@@ -280,3 +303,28 @@ window.onerror = function(msg, url, lineNo, columnNo, error) {
     return false;
 };
 
+// Theme switcher functionality
+const initTheme = () => {
+    const themeToggle = document.getElementById('theme-toggle');
+    if (!themeToggle) return;
+
+    // Check for saved theme preference
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+
+    // Toggle theme on button click
+    themeToggle.addEventListener('click', () => {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+    });
+};
+
+// Initialize theme when DOM is loaded
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initTheme);
+} else {
+    initTheme();
+}
