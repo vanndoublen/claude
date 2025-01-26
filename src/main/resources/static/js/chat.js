@@ -1,4 +1,4 @@
-// Remove all React-related code
+
 let messageHistory = [];
 let debounceTimeout;
 
@@ -246,6 +246,28 @@ function updateStatus(status) {
     statusText.textContent = status;
 }
 
+// Utility function for fetch with retry
+async function fetchStreamWithRetry(url, options, maxRetries = 3, delay = 1000) {
+    let lastError;
+
+    for (let i = 0; i < maxRetries; i++) {
+        try {
+            const response = await fetch(url, options);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response;
+        } catch (error) {
+            console.warn(`Attempt ${i + 1} failed:`, error);
+            lastError = error;
+            if (i < maxRetries - 1) {
+                await new Promise(resolve => setTimeout(resolve, delay));
+            }
+        }
+    }
+    throw lastError;
+}
+
 async function sendMessage() {
     const input = document.getElementById('user-input');
     if (!input) return;
@@ -257,34 +279,118 @@ async function sendMessage() {
     updateStatus('Thinking...');
     clearInput();
 
+    let botMessageDiv;
+    let contentDiv;
+    let accumulatedResponse = '';
+
     try {
-        const response = await fetch('/api/chat', {
+        const requestPayload = {
+            message: message
+        };
+
+        console.log('Sending request:', requestPayload);
+
+        const response = await fetchStreamWithRetry('/api/chat/stream', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Accept': 'text/event-stream',
             },
-            body: JSON.stringify({
-                message: message,
-                history: messageHistory
-            })
+            body: JSON.stringify(requestPayload)
         });
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+        const chatMessages = document.getElementById('chat-messages');
+        botMessageDiv = createMessageElement('bot', '');
+        chatMessages.appendChild(botMessageDiv);
+        contentDiv = botMessageDiv.querySelector('.message-content');
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+
+        while (true) {
+            const { done, value } = await reader.read();
+
+            if (done) {
+                console.log('Stream complete');
+                if (buffer) {
+                    await processData(buffer);
+                }
+                break;
+            }
+
+            const chunk = decoder.decode(value, { stream: true });
+            buffer += chunk;
+
+            const parts = buffer.split('\n\n');
+
+            for (let i = 0; i < parts.length - 1; i++) {
+                await processData(parts[i]);
+            }
+
+            buffer = parts[parts.length - 1];
         }
 
-        const data = await response.json();
-
-        if (data.status === 'success') {
-            appendMessage(data.message, false);
-        } else {
-            appendMessage('Sorry, there was an error processing your request.', false);
+        if (accumulatedResponse) {
+            messageHistory.push({
+                role: 'assistant',
+                content: accumulatedResponse
+            });
         }
+
     } catch (error) {
-        console.error('Error:', error);
-        appendMessage('Sorry, there was an error connecting to the server.', false);
+        console.error('Connection error:', error);
+        if (botMessageDiv) {
+            botMessageDiv.remove();
+        }
+        appendMessage('Sorry, there was an error connecting to the server. Please try again.', false);
     } finally {
         updateStatus('Ready');
+    }
+
+    async function processData(data) {
+        const lines = data.split('\n');
+
+        for (const line of lines) {
+            if (line.startsWith('data:')) {
+                try {
+                    const jsonStr = line.slice(5).trim();
+                    if (!jsonStr) continue;
+
+                    const jsonData = JSON.parse(jsonStr);
+                    console.log('Processed SSE data:', jsonData);
+
+                    if (jsonData.status === 'error') {
+                        throw new Error(jsonData.message);
+                    }
+
+                    if (jsonData.status === 'complete') {
+                        return;
+                    }
+
+                    if (jsonData.message) {
+                        accumulatedResponse += jsonData.message;
+
+                        if (contentDiv) {
+                            // Handle markdown formatting if needed
+                            if (accumulatedResponse.includes('```')) {
+                                const newMessageDiv = createMessageElement('bot', accumulatedResponse);
+                                botMessageDiv.replaceWith(newMessageDiv);
+                                botMessageDiv = newMessageDiv;
+                                contentDiv = botMessageDiv.querySelector('.message-content');
+                            } else {
+                                contentDiv.textContent = accumulatedResponse;
+                            }
+
+                            const chatMessages = document.getElementById('chat-messages');
+                            chatMessages.scrollTop = chatMessages.scrollHeight;
+                        }
+                    }
+                } catch (e) {
+                    console.warn('Error processing SSE data:', e);
+                }
+            }
+        }
     }
 }
 
