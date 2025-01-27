@@ -76,13 +76,12 @@
 
             <div class="input-container">
                 <div class="input-wrapper">
-        <textarea
-                id="user-input"
-                placeholder="Type your message..."
-                rows="1"
-                style="overflow: hidden; resize: none;"
-                oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px'"
-        ></textarea>
+<textarea
+        id="user-input"
+        placeholder="Type your message..."
+        rows="1"
+        style="overflow-y: hidden; resize: none; min-height: 40px; max-height: 200px;"
+></textarea>
                     <button id="send-button" onclick="sendMessage()">
                         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M440-160v-487L216-423l-56-57 320-320 320 320-56 57-224-224v487h-80Z"/></svg>
                     </button>

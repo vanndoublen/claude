@@ -39,17 +39,20 @@ function autoResizeTextarea() {
     const textarea = document.getElementById('user-input');
     if (!textarea) return;
 
+    // Reset height temporarily to get the correct scrollHeight
     textarea.style.height = 'auto';
-    const newHeight = Math.min(textarea.scrollHeight, 200);
-    textarea.style.height = newHeight + 'px';
-}
 
-function clearInput() {
-    const textarea = document.getElementById('user-input');
-    if (!textarea) return;
+    // Set the height to scrollHeight but cap it at 200px
+    const scrollHeight = textarea.scrollHeight;
+    const maxHeight = 200;
 
-    textarea.value = '';
-    textarea.style.height = '50px';
+    if (scrollHeight > maxHeight) {
+        textarea.style.height = maxHeight + 'px';
+        textarea.style.overflowY = 'auto';
+    } else {
+        textarea.style.height = scrollHeight + 'px';
+        textarea.style.overflowY = 'hidden';
+    }
 }
 
 function createMessageElement(role, content) {
@@ -231,7 +234,7 @@ function appendMessage(message, isUser) {
 
     const messageDiv = createMessageElement(isUser ? 'user' : 'bot', message);
     chatMessages.appendChild(messageDiv);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
+//    chatMessages.scrollTop = chatMessages.scrollHeight;
 
     messageHistory.push({
         role: isUser ? 'user' : 'assistant',
@@ -383,7 +386,7 @@ async function sendMessage() {
                             }
 
                             const chatMessages = document.getElementById('chat-messages');
-                            chatMessages.scrollTop = chatMessages.scrollHeight;
+//                            chatMessages.scrollTop = chatMessages.scrollHeight;
                         }
                     }
                 } catch (e) {
@@ -401,6 +404,15 @@ function suggestQuery(suggestion) {
     input.value = suggestion;
     autoResizeTextarea();
     input.focus();
+}
+
+function clearInput() {
+    const textarea = document.getElementById('user-input');
+    if (!textarea) return;
+
+    textarea.value = '';
+    textarea.style.height = '40px';
+    textarea.style.overflowY = 'hidden';
 }
 
 // Error handling for fetch requests
